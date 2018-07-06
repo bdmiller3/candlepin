@@ -17,6 +17,7 @@ package org.candlepin.model;
 import org.candlepin.common.jackson.HateoasArrayExclude;
 import org.candlepin.common.jackson.HateoasInclude;
 import org.candlepin.jackson.StringTrimmingConverter;
+import org.candlepin.service.model.ConsumerInfo;
 import org.candlepin.util.Util;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
@@ -78,7 +79,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = Consumer.DB_TABLE)
 @JsonFilter("ConsumerFilter")
 public class Consumer extends AbstractHibernateObject implements Linkable, Owned, Named, ConsumerProperty,
-    Eventful {
+    Eventful, ConsumerInfo {
 
     /** Name of the table backing this object in the database */
     public static final String DB_TABLE = "cp_consumer";

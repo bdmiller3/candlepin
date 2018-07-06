@@ -15,6 +15,7 @@
 package org.candlepin.model;
 
 import org.candlepin.model.dto.ContentData;
+import org.candlepin.service.model.ContentInfo;
 import org.candlepin.util.SetView;
 import org.candlepin.util.Util;
 
@@ -57,7 +58,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @Entity
 @Table(name = Content.DB_TABLE)
-public class Content extends AbstractHibernateObject implements SharedEntity, Cloneable {
+public class Content extends AbstractHibernateObject implements SharedEntity, Cloneable, ContentInfo {
 
     /** Name of the table backing this object in the database */
     public static final String DB_TABLE = "cp2_content";
@@ -277,6 +278,7 @@ public class Content extends AbstractHibernateObject implements SharedEntity, Cl
      * @return
      *  this content's ID.
      */
+    @Override
     public String getId() {
         return this.id;
     }
@@ -292,6 +294,7 @@ public class Content extends AbstractHibernateObject implements SharedEntity, Cl
         this.id = id;
     }
 
+    @Override
     public String getType() {
         return type;
     }
@@ -300,6 +303,7 @@ public class Content extends AbstractHibernateObject implements SharedEntity, Cl
         this.type = type;
     }
 
+    @Override
     public String getLabel() {
         return label;
     }
@@ -308,6 +312,7 @@ public class Content extends AbstractHibernateObject implements SharedEntity, Cl
         this.label = label;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -316,6 +321,7 @@ public class Content extends AbstractHibernateObject implements SharedEntity, Cl
         this.name = name;
     }
 
+    @Override
     public String getVendor() {
         return vendor;
     }
@@ -324,6 +330,7 @@ public class Content extends AbstractHibernateObject implements SharedEntity, Cl
         this.vendor = vendor;
     }
 
+    @Override
     public String getContentUrl() {
         return contentUrl;
     }
@@ -336,6 +343,7 @@ public class Content extends AbstractHibernateObject implements SharedEntity, Cl
      * @return Comma separated list of tags this content set requires to be
      *         enabled.
      */
+    @Override
     public String getRequiredTags() {
         return requiredTags;
     }
@@ -351,6 +359,7 @@ public class Content extends AbstractHibernateObject implements SharedEntity, Cl
     /**
      * @return the releaseVer
      */
+    @Override
     public String getReleaseVersion() {
         return releaseVer;
     }
@@ -362,6 +371,7 @@ public class Content extends AbstractHibernateObject implements SharedEntity, Cl
         this.releaseVer = releaseVer;
     }
 
+    @Override
     public String getGpgUrl() {
         return gpgUrl;
     }
@@ -370,6 +380,7 @@ public class Content extends AbstractHibernateObject implements SharedEntity, Cl
         this.gpgUrl = gpgUrl;
     }
 
+    @Override
     public Long getMetadataExpire() {
         return metadataExpire;
     }
@@ -387,6 +398,14 @@ public class Content extends AbstractHibernateObject implements SharedEntity, Cl
      */
     public Set<String> getModifiedProductIds() {
         return new SetView(this.modifiedProductIds);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<String> getRequiredProductIds() {
+        return this.getModifiedProductIds();
     }
 
     /**
@@ -457,6 +476,7 @@ public class Content extends AbstractHibernateObject implements SharedEntity, Cl
         this.arches = arches;
     }
 
+    @Override
     public String getArches() {
         return arches;
     }

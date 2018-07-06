@@ -14,6 +14,8 @@
  */
 package org.candlepin.model;
 
+import org.candlepin.service.model.CertificateInfo;
+
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
@@ -29,7 +31,8 @@ import javax.xml.bind.annotation.XmlType;
  */
 @MappedSuperclass
 @XmlType(name = "Certificate")
-public abstract class AbstractCertificate<T extends AbstractCertificate> extends AbstractHibernateObject<T> {
+public abstract class AbstractCertificate<T extends AbstractCertificate> extends AbstractHibernateObject<T>
+    implements CertificateInfo {
 
     @Column(nullable = false, name = "privatekey")
     @NotNull
@@ -69,6 +72,14 @@ public abstract class AbstractCertificate<T extends AbstractCertificate> extends
 
     public String getCert() {
         return new String(cert);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCertificate() {
+        return this.getCert();
     }
 
     public void setCert(String cert) {

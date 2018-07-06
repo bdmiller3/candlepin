@@ -18,6 +18,7 @@ import org.candlepin.auth.Access;
 import org.candlepin.auth.SubResource;
 import org.candlepin.auth.permissions.Permission;
 import org.candlepin.auth.permissions.PermissionFactory;
+import org.candlepin.service.model.UserInfo;
 import org.candlepin.util.Util;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -45,6 +46,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+
+
 /**
  * Represents the user.
  *
@@ -54,7 +57,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @Entity
 @Table(name = User.DB_TABLE)
-public class User extends AbstractHibernateObject {
+public class User extends AbstractHibernateObject implements UserInfo {
 
     /**
      * This class only exists so that Swagger can generate a separate model.  Users are not
@@ -254,6 +257,21 @@ public class User extends AbstractHibernateObject {
     }
 
     /**
+     * Clears any existing roles for this user.
+     */
+    public void clearRoles() {
+        Set<Role> cleared = this.roles;
+
+        if (cleared != null) {
+            this.roles = new HashSet<>();
+
+            for (Role role : cleared) {
+                role.removeUser(this);
+            }
+        }
+    }
+
+    /**
      * Full list of permissions for this user.
      *
      * Includes those from roles stored in the database, as well as those explicitly added
@@ -279,7 +297,7 @@ public class User extends AbstractHibernateObject {
     /**
      * @return if the user has the SUPER_ADMIN role
      */
-    public boolean isSuperAdmin() {
+    public Boolean isSuperAdmin() {
         return superAdmin;
     }
 

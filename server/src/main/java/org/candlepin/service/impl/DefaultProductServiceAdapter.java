@@ -24,6 +24,8 @@ import org.candlepin.model.ResultIterator;
 import org.candlepin.model.dto.ProductData;
 import org.candlepin.service.ProductServiceAdapter;
 import org.candlepin.service.UniqueIdGenerator;
+import org.candlepin.service.model.CertificateInfo;
+import org.candlepin.service.model.ProductInfo;
 
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
@@ -51,29 +53,17 @@ public class DefaultProductServiceAdapter implements ProductServiceAdapter {
     }
 
     @Override
-    public ProductCertificate getProductCertificate(Owner owner, String productId) {
+    public CertificateInfo getProductCertificate(String ownerKey, String productId) {
         // for product cert storage/generation - not sure if this should go in
         // a separate service?
-        Product entity = this.ownerProductCurator.getProductById(owner, productId);
+        Product entity = this.ownerProductCurator.getProductById(ownerKey, productId);
         return entity != null ? this.prodCertCurator.getCertForProduct(entity) : null;
     }
 
     @Override
     @Transactional
-    public Collection<ProductData> getProductsByIds(Owner owner, Collection<String> ids) {
-        Collection<ProductData> productData = new LinkedList<>();
-
-        ResultIterator<Product> iterator = this.ownerProductCurator
-            .getProductsByIds(owner, ids)
-            .iterate(0, true);
-
-        while (iterator.hasNext()) {
-            productData.add(iterator.next().toDTO());
-        }
-
-        iterator.close();
-
-        return productData;
+    public Collection<? extends ProductInfo> getProductsByIds(String ownerKey, Collection<String> ids) {
+        return this.ownerProductCurator.getProductsByIds(ownerKey, ids).list();
     }
 
 }

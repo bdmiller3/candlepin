@@ -16,6 +16,7 @@ package org.candlepin.dto.api.v1;
 
 import org.candlepin.dto.TimestampedCandlepinDTO;
 import org.candlepin.util.Util;
+import org.candlepin.service.model.RoleInfo;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -34,7 +35,7 @@ import java.util.Map;
  * A DTO representation of the Role entity
  */
 @ApiModel(parent = TimestampedCandlepinDTO.class, description = "Role information for a given role")
-public class RoleDTO extends TimestampedCandlepinDTO<RoleDTO> {
+public class RoleDTO extends TimestampedCandlepinDTO<RoleDTO> implements RoleInfo {
 
     public static final long serialVersionUID = 1L;
 
@@ -217,8 +218,6 @@ public class RoleDTO extends TimestampedCandlepinDTO<RoleDTO> {
      *  a reference to this DTO
      */
     public RoleDTO setUsers(Collection<UserDTO> users) {
-
-
         if (users != null) {
             this.users = new HashMap<>();
 

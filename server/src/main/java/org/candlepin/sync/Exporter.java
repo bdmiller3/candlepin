@@ -43,6 +43,7 @@ import org.candlepin.policy.js.export.ExportRules;
 import org.candlepin.service.EntitlementCertServiceAdapter;
 import org.candlepin.service.ExportExtensionAdapter;
 import org.candlepin.service.ProductServiceAdapter;
+import org.candlepin.service.model.CertificateInfo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
@@ -537,9 +538,7 @@ public class Exporter {
             // Real products have a numeric id.
             if (StringUtils.isNumeric(product.getId())) {
                 Owner owner = ownerCurator.findOwnerById(consumer.getOwnerId());
-                ProductCertificate cert = productAdapter.getProductCertificate(
-                    owner, product.getId()
-                );
+                CertificateInfo cert = productAdapter.getProductCertificate(owner.getKey(), product.getId());
 
                 // XXX: not all product adapters implement getProductCertificate,
                 // so just skip over this if we get null back

@@ -14,17 +14,16 @@
  */
 package org.candlepin.hostedtest;
 
-import org.candlepin.model.Consumer;
-import org.candlepin.model.Owner;
-import org.candlepin.model.dto.ProductContentData;
-import org.candlepin.model.dto.ProductData;
-import org.candlepin.model.dto.Subscription;
 import org.candlepin.service.SubscriptionServiceAdapter;
+import org.candlepin.service.model.ConsumerInfo;
+import org.candlepin.service.model.ProductInfo;
+import org.candlepin.service.model.SubscriptionInfo;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,24 +40,22 @@ import java.util.Map;
 public class HostedTestSubscriptionServiceAdapter implements SubscriptionServiceAdapter {
     private static Logger log = LoggerFactory.getLogger(HostedTestSubscriptionServiceAdapter.class);
 
-    private static Map<String, Subscription> idMap = new HashMap<>();
-    private static Map<String, List<Subscription>> ownerMap = new HashMap<>();
-    private static Map<String, List<Subscription>> productMap = new HashMap<>();
+    private static Map<String, SubscriptionInfo> idMap = new HashMap<>();
+    private static Map<String, List<SubscriptionInfo>> ownerMap = new HashMap<>();
+    private static Map<String, List<SubscriptionInfo>> productMap = new HashMap<>();
 
     @Override
-    public List<Subscription> getSubscriptions(Owner owner) {
-        if (ownerMap.containsKey(owner.getKey())) {
-            return ownerMap.get(owner.getKey());
-        }
-        return new ArrayList<>();
+    public Collection<SubscriptionInfo> getSubscriptions(String ownerKey) {
+        return this.ownerMap.containsKey(ownerKey) ? this.ownerMap.get(ownerKey) : new ArrayList<>();
     }
 
     @Override
-    public List<String> getSubscriptionIds(Owner owner) {
+    public Collection<String> getSubscriptionIds(String ownerKey) {
         List<String> ids = new ArrayList<>();
-        List<Subscription> subscriptions = ownerMap.get(owner.getKey());
+        List<SubscriptionInfo> subscriptions = ownerMap.get(ownerKey);
+
         if (subscriptions != null) {
-            for (Subscription subscription : subscriptions) {
+            for (SubscriptionInfo subscription : subscriptions) {
                 ids.add(subscription.getId());
             }
         }
@@ -67,21 +64,18 @@ public class HostedTestSubscriptionServiceAdapter implements SubscriptionService
     }
 
     @Override
-    public List<Subscription> getSubscriptions(ProductData product) {
-        if (productMap.containsKey(product.getId())) {
-            return productMap.get(product.getId());
-        }
-        return new ArrayList<>();
+    public Collection<SubscriptionInfo> getSubscriptionsByProductId(String productId) {
+        return this.productMap.containsKey(productId) ? this.productMap.get(productId) : new ArrayList<>();
     }
 
     @Override
-    public Subscription getSubscription(String subscriptionId) {
+    public SubscriptionInfo getSubscription(String subscriptionId) {
         return idMap.get(subscriptionId);
     }
 
     @Override
-    public List<Subscription> getSubscriptions() {
-        List<Subscription> result = new ArrayList<>();
+    public Collection<SubscriptionInfo> getSubscriptions() {
+        List<SubscriptionInfo> result = new ArrayList<>();
         for (String id : idMap.keySet()) {
             result.add(idMap.get(id));
         }
@@ -89,7 +83,7 @@ public class HostedTestSubscriptionServiceAdapter implements SubscriptionService
     }
 
     @Override
-    public boolean hasUnacceptedSubscriptionTerms(Owner owner) {
+    public boolean hasUnacceptedSubscriptionTerms(String ownerKey) {
         return false;
     }
 
@@ -99,17 +93,16 @@ public class HostedTestSubscriptionServiceAdapter implements SubscriptionService
     }
 
     @Override
-    public boolean canActivateSubscription(Consumer consumer) {
+    public boolean canActivateSubscription(ConsumerInfo consumer) {
         return false;
     }
 
     @Override
-    public void activateSubscription(Consumer consumer, String email, String emailLocale) {
+    public void activateSubscription(ConsumerInfo consumer, String email, String emailLocale) {
         // method intentionally left blank
     }
 
-    @Override
-    public Subscription createSubscription(Subscription s) {
+    public SubscriptionInfo createSubscription(SubscriptionInfo s) {
         idMap.put(s.getId(), s);
         if (!ownerMap.containsKey(s.getOwner().getKey())) {
             ownerMap.put(s.getOwner().getKey(), new ArrayList<>());
@@ -123,13 +116,13 @@ public class HostedTestSubscriptionServiceAdapter implements SubscriptionService
         this.clearUuids(s.getDerivedProduct());
 
         if (CollectionUtils.isNotEmpty(s.getProvidedProducts())) {
-            for (ProductData pdata : s.getProvidedProducts()) {
+            for (ProductInfo pdata : s.getProvidedProducts()) {
                 this.clearUuids(pdata);
             }
         }
 
         if (CollectionUtils.isNotEmpty(s.getDerivedProvidedProducts())) {
-            for (ProductData pdata : s.getDerivedProvidedProducts()) {
+            for (ProductInfo pdata : s.getDerivedProvidedProducts()) {
                 this.clearUuids(pdata);
             }
         }
@@ -138,7 +131,7 @@ public class HostedTestSubscriptionServiceAdapter implements SubscriptionService
         return s;
     }
 
-    private void clearUuids(ProductData pdata) {
+    private void clearUuids(ProductInfo pdata) {
         if (pdata != null) {
             pdata.setUuid(null);
             if (pdata.getProductContent() != null) {
@@ -151,20 +144,19 @@ public class HostedTestSubscriptionServiceAdapter implements SubscriptionService
         }
     }
 
-    public Subscription updateSubscription(Subscription ss) {
+    public SubscriptionInfo updateSubscription(SubscriptionInfo ss) {
         deleteSubscription(ss.getId());
-        Subscription s = createSubscription(ss);
+        SubscriptionInfo s = createSubscription(ss);
         return s;
     }
 
-    @Override
-    public void deleteSubscription(Subscription s) {
+    public void deleteSubscription(SubscriptionInfo s) {
         deleteSubscription(s.getId());
     }
 
     public boolean deleteSubscription(String id) {
         if (idMap.containsKey(id)) {
-            Subscription s = idMap.remove(id);
+            SubscriptionInfo s = idMap.remove(id);
             ownerMap.get(s.getOwner().getKey()).remove(s);
             productMap.get(s.getProduct().getId()).remove(s);
             return true;

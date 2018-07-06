@@ -14,12 +14,14 @@
  */
 package org.candlepin.service;
 
-import org.candlepin.model.Consumer;
-import org.candlepin.model.Owner;
-import org.candlepin.model.dto.ProductData;
-import org.candlepin.model.dto.Subscription;
+import org.candlepin.service.model.ConsumerInfo;
+import org.candlepin.service.model.OwnerInfo;
+import org.candlepin.service.model.ProductInfo;
+import org.candlepin.service.model.SubscriptionInfo;
 
-import java.util.List;
+import java.util.Collection;
+
+
 
 /**
  * Subscription data may originate from a separate service outside Candlepin
@@ -31,31 +33,39 @@ import java.util.List;
 public interface SubscriptionServiceAdapter {
 
     /**
-     * List all subscriptions for the given owner.
-     * @param owner Owner of the subscriptions.
-     * @return all subscriptions for the given owner.
+     * Return all subscriptions.
+     * @return all subscriptions.
      */
-    List<Subscription> getSubscriptions(Owner owner);
-
-    /**
-     * List all active subscription ids for the given owner.
-     * @param owner Owner of the subscriptions.
-     * @return ids of all subscriptions for the given owner.
-     */
-    List<String> getSubscriptionIds(Owner owner);
+    Collection<SubscriptionInfo> getSubscriptions();
 
     /**
      * Lookup a specific subscription.
      * @param subscriptionId id of the subscription to return.
      * @return Subscription whose id matches subscriptionId
      */
-    Subscription getSubscription(String subscriptionId);
+    SubscriptionInfo getSubscription(String subscriptionId);
 
     /**
-     * Return all subscriptions.
-     * @return all subscriptions.
+     * List all subscriptions for the given owner.
+     * @param owner Owner of the subscriptions.
+     * @return all subscriptions for the given owner.
      */
-    List<Subscription> getSubscriptions();
+    Collection<SubscriptionInfo> getSubscriptions(String ownerKey);
+
+    /**
+     * List all active subscription ids for the given owner.
+     * @param owner Owner of the subscriptions.
+     * @return ids of all subscriptions for the given owner.
+     */
+    Collection<String> getSubscriptionIds(String ownerKey);
+
+    /**
+     * Search for all subscriptions that provide a given product.
+     *
+     * @param product the main or provided product to look for.
+     * @return a list of subscriptions that provide this product.
+     */
+    Collection<SubscriptionInfo> getSubscriptionsByProductId(String productId);
 
     /**
      * Checks to see if the customer has subscription terms that need to be accepted
@@ -63,8 +73,7 @@ public interface SubscriptionServiceAdapter {
      * @return false if no subscriptions a runtime exception will a localized message
      * if there are terms to be accepted
      */
-    boolean hasUnacceptedSubscriptionTerms(Owner owner);
-
+    boolean hasUnacceptedSubscriptionTerms(String ownerKey);
 
     /**
      * A pool for a subscription id has been created. Send the activation email
@@ -74,14 +83,13 @@ public interface SubscriptionServiceAdapter {
      */
     void sendActivationEmail(String subscriptionId);
 
-
     /**
      * Can this consumer activate a subscription?
      *
      * @param consumer
      * @return <code>true</code> if and only if this consumer can activate a subscription
      */
-    boolean canActivateSubscription(Consumer consumer);
+    boolean canActivateSubscription(ConsumerInfo consumer);
 
     /**
      * Activate a subscription associated with the consumer
@@ -90,28 +98,7 @@ public interface SubscriptionServiceAdapter {
      * @param email the email address tied to this consumer
      * @param emailLocale the i18n locale for the email
      */
-    void activateSubscription(Consumer consumer, String email, String emailLocale);
-
-    /**
-     * Create the given subscription.
-     *
-     * Raise not implemented exception if you do not wish to support this
-     * in your subscription service.
-     *
-     * @param s Subscription to create.
-     * @return Newly created Subscription.
-     */
-    Subscription createSubscription(Subscription s);
-
-    /**
-     * Delete the given subscription.
-     *
-     * Raise not implemented exception if you do not wish to support this
-     * in your subscription service.
-     *
-     * @param s Subscription to destroy.
-     */
-    void deleteSubscription(Subscription s);
+    void activateSubscription(ConsumerInfo consumer, String email, String emailLocale);
 
     /**
      * Some subscription services are read-only. This allows us to avoid certain
@@ -123,12 +110,4 @@ public interface SubscriptionServiceAdapter {
      * @return Whether or not this service is read-only
      */
     boolean isReadOnly();
-
-    /**
-     * Search for all subscriptions that provide a given product.
-     *
-     * @param product the main or provided product to look for.
-     * @return a list of subscriptions that provide this product.
-     */
-    List<Subscription> getSubscriptions(ProductData product);
 }

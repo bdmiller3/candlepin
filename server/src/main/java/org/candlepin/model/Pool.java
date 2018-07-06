@@ -1341,6 +1341,7 @@ public class Pool extends AbstractHibernateObject<Pool> implements Owned, Named,
         else if (hasAttribute(Attributes.DEVELOPMENT_POOL)) {
             return PoolType.DEVELOPMENT;
         }
+
         return PoolType.NORMAL;
     }
 

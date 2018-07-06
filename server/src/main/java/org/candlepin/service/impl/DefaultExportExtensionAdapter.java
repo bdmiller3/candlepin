@@ -14,6 +14,8 @@
  */
 package org.candlepin.service.impl;
 
+import org.candlepin.service.model.ConsumerInfo;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -21,16 +23,18 @@ import java.util.Map;
 import org.candlepin.model.Consumer;
 import org.candlepin.service.ExportExtensionAdapter;
 
+
+
 /**
  * The default implementation of the {@link ExportExtensionAdapter}. This adapter adds
  * nothing to the manifest.
- *
  */
 public class DefaultExportExtensionAdapter implements ExportExtensionAdapter {
 
     @Override
-    public void extendManifest(File extensionDir, Consumer targetConsumer, Map<String, String> extensionData)
+    public void extendManifest(File extensionDir, ConsumerInfo consumer, Map<String, String> extensionData)
         throws IOException {
+
         // The default implementation does nothing.
     }
 

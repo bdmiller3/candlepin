@@ -16,16 +16,17 @@
 package org.candlepin.service.impl;
 
 import org.candlepin.common.exceptions.ServiceUnavailableException;
-import org.candlepin.model.Consumer;
-import org.candlepin.model.Owner;
-import org.candlepin.model.dto.ProductData;
-import org.candlepin.model.dto.Subscription;
 import org.candlepin.service.SubscriptionServiceAdapter;
+import org.candlepin.service.model.ConsumerInfo;
+import org.candlepin.service.model.ProductInfo;
+import org.candlepin.service.model.SubscriptionInfo;
+
 import org.xnap.commons.i18n.I18n;
 
 import com.google.inject.Inject;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,55 +39,68 @@ import java.util.Map;
  */
 public class ImportSubscriptionServiceAdapter implements SubscriptionServiceAdapter {
 
-    private List<Subscription> subscriptions;
-    private Map<String, Subscription> subsBySubId = new HashMap<>();
+    private List<SubscriptionInfo> subscriptions;
+    private Map<String, SubscriptionInfo> subsBySubId = new HashMap<>();
     @Inject private I18n i18n;
 
     public ImportSubscriptionServiceAdapter() {
         this(new LinkedList<>());
     }
 
-    public ImportSubscriptionServiceAdapter(List<Subscription> subs) {
+    public ImportSubscriptionServiceAdapter(List<SubscriptionInfo> subs) {
         this.subscriptions = subs;
-        for (Subscription sub : this.subscriptions) {
+        for (SubscriptionInfo sub : this.subscriptions) {
             subsBySubId.put(sub.getId(), sub);
         }
     }
 
     @Override
-    public List<Subscription> getSubscriptions(Owner owner) {
+    public Collection<SubscriptionInfo> getSubscriptions() {
         return subscriptions;
     }
 
     @Override
-    public List<String> getSubscriptionIds(Owner owner) {
-        return new ArrayList<>(subsBySubId.keySet());
-    }
-
-    @Override
-    public Subscription getSubscription(String subscriptionId) {
+    public SubscriptionInfo getSubscription(String subscriptionId) {
         return this.subsBySubId.get(subscriptionId);
     }
 
     @Override
-    public List<Subscription> getSubscriptions() {
+    public Collection<SubscriptionInfo> getSubscriptions(String ownerKey) {
         return subscriptions;
     }
 
     @Override
-    public void activateSubscription(Consumer consumer, String email, String emailLocale) {
+    public Collection<String> getSubscriptionIds(String ownerKey) {
+        return new ArrayList<>(subsBySubId.keySet());
+    }
+
+    @Override
+    public Collection<SubscriptionInfo> getSubscriptionsByProductId(String productId) {
+        List<SubscriptionInfo> subs = new LinkedList<>();
+
+        if (productId != null) {
+            for (SubscriptionInfo sub : this.subscriptions) {
+                if (productId.equals(sub.getProduct().getId())) {
+                    subs.add(sub);
+                    continue;
+                }
+
+                for (ProductInfo p : sub.getProvidedProducts()) {
+                    if (productId.equals(p.getId())) {
+                        subs.add(sub);
+                        break;
+                    }
+                }
+            }
+        }
+
+        return subs;
+    }
+
+    @Override
+    public void activateSubscription(ConsumerInfo consumer, String email, String emailLocale) {
         throw new ServiceUnavailableException(
                 i18n.tr("Standalone candlepin does not support redeeming a subscription."));
-    }
-
-    @Override
-    public Subscription createSubscription(Subscription s) {
-        return s;
-    }
-
-    @Override
-    public void deleteSubscription(Subscription s) {
-        // no op for now.
     }
 
     @Override
@@ -95,7 +109,7 @@ public class ImportSubscriptionServiceAdapter implements SubscriptionServiceAdap
     }
 
     @Override
-    public boolean hasUnacceptedSubscriptionTerms(Owner owner) {
+    public boolean hasUnacceptedSubscriptionTerms(String ownerKey) {
         return false;
     }
 
@@ -105,29 +119,8 @@ public class ImportSubscriptionServiceAdapter implements SubscriptionServiceAdap
     }
 
     @Override
-    public boolean canActivateSubscription(Consumer consumer) {
+    public boolean canActivateSubscription(ConsumerInfo consumer) {
         return false;
-    }
-
-    @Override
-    public List<Subscription> getSubscriptions(ProductData product) {
-
-        List<Subscription> subs = new LinkedList<>();
-
-        for (Subscription sub : this.subscriptions) {
-            if (product.getUuid().equals(sub.getProduct().getUuid())) {
-                subs.add(sub);
-                continue;
-            }
-
-            for (ProductData p : sub.getProvidedProducts()) {
-                if (product.getUuid().equals(p.getUuid())) {
-                    subs.add(sub);
-                    break;
-                }
-            }
-        }
-        return subs;
     }
 
 }
