@@ -442,7 +442,7 @@ public class HypervisorUpdateJob extends KingpinJob {
         consumer.setFact("uname.machine", "x86_64");
         consumer.setGuestIds(new ArrayList<>());
         consumer.setLastCheckin(new Date());
-        consumer.setOwner(owner);
+        consumer.setOwnerId(owner.getId());
         consumer.setAutoheal(true);
         consumer.setCanActivate(subAdapter.canActivateSubscription(consumer));
         if (owner.getDefaultServiceLevel() != null) {

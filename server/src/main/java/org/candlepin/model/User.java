@@ -228,11 +228,13 @@ public class User extends AbstractHibernateObject implements UserInfo {
         if (sub == null) {
             sub = SubResource.NONE;
         }
+
         for (Permission p : this.getPermissions()) {
             if (p.canAccess(p.getOwner(), sub, accessLevel)) {
                 owners.add(p.getOwner());
             }
         }
+
         return owners;
     }
 

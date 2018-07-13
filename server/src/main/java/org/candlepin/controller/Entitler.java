@@ -362,7 +362,7 @@ public class Entitler {
         Map<String, ContentData> contentMap = new HashMap<>();
 
         log.debug("Importing products for dev pool resolution...");
-        for (ProductData product : this.productAdapter.getProductsByIds(owner, devProductIds)) {
+        for (ProductData product : this.productAdapter.getProductsByIds(owner.getKey(), devProductIds)) {
             if (product == null) {
                 continue;
             }

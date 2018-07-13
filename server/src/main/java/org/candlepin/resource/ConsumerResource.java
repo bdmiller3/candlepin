@@ -115,6 +115,7 @@ import org.candlepin.service.IdentityCertServiceAdapter;
 import org.candlepin.service.OwnerServiceAdapter;
 import org.candlepin.service.SubscriptionServiceAdapter;
 import org.candlepin.service.UserServiceAdapter;
+import org.candlepin.service.model.UserInfo;
 import org.candlepin.sync.ExportCreationException;
 import org.candlepin.util.FactValidator;
 import org.candlepin.util.PropertyValidationException;
@@ -784,7 +785,7 @@ public class ConsumerResource {
         }
 
         Consumer consumerToCreate = new Consumer();
-        consumerToCreate.setOwner(owner);
+        consumerToCreate.setOwnerId(owner.getId());
         populateEntity(consumerToCreate, consumer);
         consumerToCreate.setType(type);
 
@@ -1137,7 +1138,7 @@ public class ConsumerResource {
     private void verifyPersonConsumer(ConsumerDTO consumer, ConsumerType type, Owner owner, String username,
         Principal principal) {
 
-        User user = null;
+        UserInfo user = null;
         try {
             user = userService.findByLogin(username);
         }
@@ -1146,7 +1147,7 @@ public class ConsumerResource {
         }
 
         if (user == null) {
-            throw new NotFoundException(i18n.tr("User with ID \"{0}\" could not be found."));
+            throw new NotFoundException(i18n.tr(this.i18n.tr("User not found: {0}", username)));
         }
 
         // When registering person consumers we need to be sure the username
@@ -2024,7 +2025,7 @@ public class ConsumerResource {
             // terms, we want comeToTerms to be true.
             long subTermsStart = System.currentTimeMillis();
             if (!ctype.isType(ConsumerTypeEnum.SHARE) &&
-                subAdapter.hasUnacceptedSubscriptionTerms(owner)) {
+                this.subAdapter.hasUnacceptedSubscriptionTerms(owner.getKey())) {
 
                 return Response.serverError().build();
             }

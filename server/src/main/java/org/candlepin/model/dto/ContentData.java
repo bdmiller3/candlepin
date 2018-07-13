@@ -446,7 +446,7 @@ public class ContentData extends CandlepinDTO {
      *  the metadata expiration of the content, or null if the metadata expiration has not yet been
      *  defined
      */
-    public Long getMetadataExpire() {
+    public Long getMetadataExpiration() {
         return this.metadataExpire;
     }
 
@@ -460,7 +460,7 @@ public class ContentData extends CandlepinDTO {
      * @return
      *  a reference to this DTO
      */
-    public ContentData setMetadataExpire(Long metadataExpire) {
+    public ContentData setMetadataExpiration(Long metadataExpire) {
         this.metadataExpire = metadataExpire;
         return this;
     }
@@ -697,7 +697,7 @@ public class ContentData extends CandlepinDTO {
         this.requiredTags = source.getRequiredTags();
         this.releaseVer = source.getReleaseVersion();
         this.gpgUrl = source.getGpgUrl();
-        this.metadataExpire = source.getMetadataExpire();
+        this.metadataExpire = source.getMetadataExpiration();
         this.arches = source.getArches();
         this.locked = source.isLocked();
 
@@ -735,7 +735,7 @@ public class ContentData extends CandlepinDTO {
         this.requiredTags = source.getRequiredTags();
         this.releaseVer = source.getReleaseVersion();
         this.gpgUrl = source.getGpgUrl();
-        this.metadataExpire = source.getMetadataExpire();
+        this.metadataExpire = source.getMetadataExpiration();
         this.arches = source.getArches();
         this.locked = source.isLocked();
 

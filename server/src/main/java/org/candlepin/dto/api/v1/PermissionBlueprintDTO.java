@@ -189,7 +189,7 @@ public class PermissionBlueprintDTO extends TimestampedCandlepinDTO<PermissionBl
      */
     @Override
     @JsonIgnore
-    public String getAccessName() {
+    public String getAccessLevel() {
         return this.getAccess();
     }
 

@@ -19,7 +19,7 @@ import java.util.Collection;
 
 
 /**
- * The SubscriptionInfo represents a minimal set of owner/organization information used by the
+ * The SubscriptionInfo represents a minimal set of subscription information used by the
  * service adapters.
  *
  * Data which is not set or does not change should be represented by null values. To explicitly
@@ -37,6 +37,15 @@ public interface SubscriptionInfo {
     String getId();
 
     /**
+     * Fetches the owner of this subscription. If the owner has not yet been set, this method
+     * returns null.
+     *
+     * @return
+     *  The owner of this subscription, or null if the owner has not been set
+     */
+    OwnerInfo getOwner();
+
+    /**
      * Fetches the marketing product (SKU) for this subscription. If the marketing product has not
      * yet been set, this method returns null.
      *
@@ -46,7 +55,7 @@ public interface SubscriptionInfo {
     ProductInfo getProduct();
 
     /**
-     * Fetches the collection of engineering products this subscription provides. If the provided
+     * Fetches a collection of engineering products this subscription provides. If the provided
      * products have not yet been set, this method returns null. If this subscription does not
      * provide any engineering products, this method returns an empty collection.
      *
@@ -54,7 +63,28 @@ public interface SubscriptionInfo {
      *  A collection of engineering products provided by this subscription, or null if the provided
      *  products have not been set
      */
-    Collection<ProductInfo> getProvidedProducts();
+    Collection<? extends ProductInfo> getProvidedProducts();
 
+    /**
+     * Fetches the derived marketing product (SKU) provided to guests of hosts consuming this
+     * subscription. If the derived product has not been set, this method returns null.
+     *
+     * @return
+     *  The derived marketing product for this subscription, or null if the derived product has not
+     *  been set
+     */
+    ProductInfo getDerivedProduct();
+
+    /**
+     * Fetches a collection of derived engineering products provided to guests of hosts consuming
+     * this subscription. If the derived provided products have not been set, this method returns
+     * null. If this subscription does not provide any derived products, this method returns an
+     * empty collection.
+     *
+     * @return
+     *  A collection of engineering products provided by this subscription, or null if the derived
+     *  provided products have not been set
+     */
+    Collection<? extends ProductInfo> getDerivedProvidedProducts();
 
 }

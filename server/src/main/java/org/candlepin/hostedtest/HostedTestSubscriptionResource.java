@@ -247,7 +247,10 @@ public class HostedTestSubscriptionResource {
         return this.translator.translate(product, ProductDTO.class);
     }
 
-    private void addContentToUpstreamSubscriptions(Product product, Content content, boolean enabled) {
+    private void addContentToUpstreamSubscriptions(String productId, Content content, boolean enabled) {
+        List<? extends SubscriptionInfo> subs = this.adapter.getSubscriptionsByProductId(productId);
+
+
         List<Subscription> subs = adapter.getSubscriptions(product.toDTO());
         for (Subscription sub: subs) {
             if (sub.getProduct().getId().contentEquals(product.getId())) {

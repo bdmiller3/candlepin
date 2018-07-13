@@ -295,7 +295,7 @@ public class DefaultUserServiceAdapter implements UserServiceAdapter {
 
                 pentity.setOwner(this.resolveOwnerInfo(permission.getOwner()));
                 pentity.setType(PermissionType.valueOf(permission.getTypeName()));
-                pentity.setAccess(Access.valueOf(permission.getAccessName()));
+                pentity.setAccess(Access.valueOf(permission.getAccessLevel()));
 
                 entity.addPermission(pentity);
             }
@@ -355,7 +355,7 @@ public class DefaultUserServiceAdapter implements UserServiceAdapter {
 
                     pentity.setOwner(this.resolveOwnerInfo(permission.getOwner()));
                     pentity.setType(PermissionType.valueOf(permission.getTypeName()));
-                    pentity.setAccess(Access.valueOf(permission.getAccessName()));
+                    pentity.setAccess(Access.valueOf(permission.getAccessLevel()));
 
                     permissions.add(pentity);
                 }
@@ -439,7 +439,7 @@ public class DefaultUserServiceAdapter implements UserServiceAdapter {
 
         pentity.setOwner(this.resolveOwnerInfo(permission.getOwner()));
         pentity.setType(PermissionType.valueOf(permission.getTypeName()));
-        pentity.setAccess(Access.valueOf(permission.getAccessName()));
+        pentity.setAccess(Access.valueOf(permission.getAccessLevel()));
 
         roleEntity.addPermission(pentity);
 

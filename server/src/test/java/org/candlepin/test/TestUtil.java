@@ -214,7 +214,7 @@ public class TestUtil {
             content.setRequiredTags(dto.getRequiredTags());
             content.setReleaseVersion(dto.getReleaseVersion());
             content.setGpgUrl(dto.getGpgUrl());
-            content.setMetadataExpire(dto.getMetadataExpiration());
+            content.setMetadataExpiration(dto.getMetadataExpiration());
             content.setModifiedProductIds(dto.getModifiedProductIds());
             content.setArches(dto.getArches());
             content.setLocked(dto.isLocked());
@@ -237,7 +237,7 @@ public class TestUtil {
             content.setRequiredTags(cdata.getRequiredTags());
             content.setReleaseVersion(cdata.getReleaseVersion());
             content.setGpgUrl(cdata.getGpgUrl());
-            content.setMetadataExpire(cdata.getMetadataExpire());
+            content.setMetadataExpiration(cdata.getMetadataExpiration());
             content.setModifiedProductIds(cdata.getModifiedProductIds());
             content.setArches(cdata.getArches());
             content.setLocked(cdata.isLocked());

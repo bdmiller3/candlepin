@@ -14,20 +14,27 @@
  */
 package org.candlepin.auth.permissions;
 
-import org.candlepin.model.PermissionBlueprint;
-import org.candlepin.model.User;
+import org.candlepin.auth.Access;
+import org.candlepin.service.model.PermissionInfo;
+import org.candlepin.service.model.UserInfo;
 
-import com.google.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+
 
 /**
- * PermissionFactory: Creates concrete Java permission classes based on the
- * permission blueprints from the database.
+ * PermissionFactory: Creates concrete Java permission classes based on the provided permission info
  */
 public class PermissionFactory {
+    private static Logger log = LoggerFactory.getLogger(PermissionFactory.class);
 
     /**
      * PermissionType: Key used to determine which class to create.
@@ -40,42 +47,109 @@ public class PermissionFactory {
         ATTACH
     }
 
-    @Inject
+    public interface PermissionBuilder {
+        Permission build(UserInfo user, PermissionInfo permission);
+    }
+
+    private static final Map<String, PermissionBuilder> BUILDERS;
+
+    static {
+        Map<String, PermissionBuilder> map = new HashMap<>();
+
+        map.put(PermissionType.OWNER.name(),
+            (user, perm) -> new OwnerPermission(perm.getOwner(), Access.valueOf(perm.getAccessLevel())));
+
+        map.put(PermissionType.OWNER_POOLS.name(),
+            (user, perm) -> new OwnerPoolsPermission(perm.getOwner()));
+
+        map.put(PermissionType.USERNAME_CONSUMERS.name(),
+            (user, perm) -> new UsernameConsumersPermission(user, perm.getOwner()));
+
+        map.put(PermissionType.ATTACH.name(),
+            (user, perm) -> new AttachPermission(perm.getOwner()));
+
+        BUILDERS = Collections.unmodifiableMap(map);
+    }
+
     public PermissionFactory() {
+        // Intentionally left empty
     }
 
-    public List<Permission> createPermissions(User user,
-        Collection<PermissionBlueprint> dbPerms) {
-        List<Permission> perms = new LinkedList<>();
-        for (PermissionBlueprint hint : dbPerms) {
-            perms.add(createPermission(user, hint));
+    /**
+     * Converts the provided permission info into a concrete permission for the given user.
+     *
+     * @param user
+     *  The user info of the user for which to create a permission
+     *
+     * @param permission
+     *  The permission info to use to create the permission
+     *
+     * @return
+     *  A concrete permission based on the provided user and permission info
+     */
+    public Permission createPermission(UserInfo user, PermissionInfo permission) {
+        if (user == null) {
+            throw new IllegalArgumentException("user is null");
         }
-        return perms;
-    }
 
-    public Permission createPermission(User user, PermissionBlueprint permBp) {
-        switch (permBp.getType()) {
-        // TODO: what if an entity isn't found?
-            case OWNER:
-                Permission p = new OwnerPermission(permBp.getOwner(),
-                    permBp.getAccess());
-                return p;
-
-            case USERNAME_CONSUMERS:
-                Permission usernamePerm = new UsernameConsumersPermission(user,
-                    permBp.getOwner());
-                return usernamePerm;
-
-            case OWNER_POOLS:
-                Permission ownerPools = new OwnerPoolsPermission(permBp.getOwner());
-                return ownerPools;
-
-            case ATTACH:
-                Permission attach = new AttachPermission(permBp.getOwner());
-                return attach;
-
-            default:
-                return null; // TODO
+        if (permission == null) {
+            throw new IllegalArgumentException("permission is null");
         }
+
+        PermissionBuilder builder = BUILDERS.get(permission.getTypeName());
+        if (builder != null) {
+            return builder.build(user, permission);
+        }
+
+        log.warn("Unsupported permission type: {}", permission.getTypeName());
+        return null;
     }
+
+    /**
+     * Converts the provided permission info into concrete permissions for the given user.
+     *
+     * @param user
+     *  The user info of the user for which to create a permission
+     *
+     * @param perms
+     *  A collection of PermissionInfo instances to use to create the concrete permissions
+     *
+     * @throws IllegalArgumentException
+     *  if user is null, if perms is null, or perms contains null elements
+     *
+     * @return
+     *  A collection of concrete permissions based on the provided user and permission info
+     */
+    public Set<Permission> createPermissions(UserInfo user, Collection<? extends PermissionInfo> perms) {
+        if (user == null) {
+            throw new IllegalArgumentException("user is null");
+        }
+
+        Set<Permission> translated = null;
+
+        if (perms != null) {
+            translated = new HashSet<>();
+
+            // Impl note: we don't call the singular create permission here because it's faster to
+            // do the work ourselves, avoiding the method overhead, user re-check on every iteration
+            // and checking the output of createPermission to filter nulls.
+            // While in the general case the savings are immeasurable, we do this on *every
+            // non-admin request* with a UserAuth provider, so the savings will add up real quick.
+            for (PermissionInfo pinfo : perms) {
+                if (pinfo != null) {
+                    PermissionBuilder builder = BUILDERS.get(pinfo.getTypeName());
+
+                    if (builder != null) {
+                        translated.add(builder.build(user, pinfo));
+                    }
+                    else {
+                        log.warn("Unsupported permission type: {}", pinfo.getTypeName());
+                    }
+                }
+            }
+        }
+
+        return translated;
+    }
+
 }

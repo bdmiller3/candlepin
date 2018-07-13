@@ -123,7 +123,7 @@ public class ProductContent extends AbstractHibernateObject implements ProductCo
      * @return the enabled
      */
     @Override
-    public boolean isEnabled() {
+    public Boolean isEnabled() {
         return enabled;
     }
 

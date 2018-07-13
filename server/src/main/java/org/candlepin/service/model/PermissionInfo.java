@@ -58,6 +58,6 @@ public interface PermissionInfo {
      * @return
      *  The access provided by this permission, or null if the access has not been set
      */
-    String getAccessName();
+    String getAccessLevel();
 
 }

@@ -337,7 +337,7 @@ public class HypervisorResource {
         consumer.setType(this.hypervisorType);
         consumer.setFact("uname.machine", "x86_64");
         consumer.setGuestIds(new ArrayList<>());
-        consumer.setOwner(owner);
+        consumer.setOwnerId(owner.getId());
 
         // Create HypervisorId
         HypervisorId hypervisorId = new HypervisorId(consumer, owner, incHypervisorId);

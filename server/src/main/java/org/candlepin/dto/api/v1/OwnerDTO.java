@@ -15,6 +15,7 @@
 package org.candlepin.dto.api.v1;
 
 import org.candlepin.common.jackson.HateoasInclude;
+import org.candlepin.service.model.OwnerInfo;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -40,7 +41,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @ApiModel(parent = TimestampedCandlepinDTO.class, description = "DTO representing an owner/organization")
 @JsonFilter("OwnerFilter")
-public class OwnerDTO extends TimestampedCandlepinDTO<OwnerDTO> implements LinkableDTO {
+public class OwnerDTO extends TimestampedCandlepinDTO<OwnerDTO> implements LinkableDTO, OwnerInfo {
     public static final long serialVersionUID = 1L;
 
     protected String id;

@@ -103,7 +103,7 @@ public class Refresher {
             // TODO: This adapter call is not implemented in prod, and cannot be. We plan
             // to fix this whole code path in near future by looking for pools using the
             // given products to be refreshed.
-            List<Subscription> subs = subAdapter.getSubscriptions(product.toDTO());
+            List<Subscription> subs = subAdapter.getSubscriptions(product.getId());
             log.debug("Will refresh {} subscriptions in all orgs using product: ",
                 subs.size(), product.getId());
 

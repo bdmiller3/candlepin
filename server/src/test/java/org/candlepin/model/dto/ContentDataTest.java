@@ -223,17 +223,17 @@ public class ContentDataTest {
     }
 
     @Test
-    public void testGetSetMetadataExpire() {
+    public void testGetSetMetadataExpiration() {
         ContentData dto = new ContentData();
         Long input = 12345L;
 
-        Long output = dto.getMetadataExpire();
+        Long output = dto.getMetadataExpiration();
         assertNull(output);
 
-        ContentData output2 = dto.setMetadataExpire(input);
+        ContentData output2 = dto.setMetadataExpiration(input);
         assertSame(output2, dto);
 
-        output = dto.getMetadataExpire();
+        output = dto.getMetadataExpiration();
         assertEquals(input, output);
     }
 

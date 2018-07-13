@@ -17,6 +17,7 @@ package org.candlepin.auth.permissions;
 import org.candlepin.auth.Access;
 import org.candlepin.auth.SubResource;
 import org.candlepin.model.Owner;
+import org.candlepin.service.model.OwnerInfo;
 
 import org.hibernate.criterion.Criterion;
 
@@ -25,9 +26,9 @@ import org.hibernate.criterion.Criterion;
  */
 public class OwnerPoolsPermission extends TypedPermission<Owner> {
 
-    private Owner owner;
+    private final OwnerInfo owner;
 
-    public OwnerPoolsPermission(Owner owner) {
+    public OwnerPoolsPermission(OwnerInfo owner) {
         this.owner = owner;
         this.access = Access.READ_ONLY;
     }
@@ -38,8 +39,7 @@ public class OwnerPoolsPermission extends TypedPermission<Owner> {
     }
 
     @Override
-    public boolean canAccessTarget(Owner target, SubResource subResource,
-        Access required) {
+    public boolean canAccessTarget(Owner target, SubResource subResource, Access required) {
         return target.getKey().equals(owner.getKey()) &&
             (subResource.equals(SubResource.POOLS) ||
                 subResource.equals(SubResource.SUBSCRIPTIONS)) &&

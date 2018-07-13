@@ -415,8 +415,8 @@ public class X509V3ExtensionUtil extends X509Util {
             }
 
             // Include metadata expiry if specified on the content
-            if (pc.getContent().getMetadataExpire() != null) {
-                content.setMetadataExpire(pc.getContent().getMetadataExpire());
+            if (pc.getContent().getMetadataExpiration() != null) {
+                content.setMetadataExpiration(pc.getContent().getMetadataExpiration());
             }
 
             // Include required tags if specified on the content set

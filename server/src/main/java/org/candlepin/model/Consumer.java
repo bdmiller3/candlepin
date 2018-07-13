@@ -161,6 +161,9 @@ public class Consumer extends AbstractHibernateObject implements Linkable, Owned
     @Column(name = "owner_id")
     private String ownerId;
 
+    @Transient
+    private Owner owner;
+
     @Column(name = "environment_id")
     private String environmentId;
 
@@ -393,13 +396,42 @@ public class Consumer extends AbstractHibernateObject implements Linkable, Owned
     }
 
     /**
-     * Associates an owner to this Consumer.
-     * @param owner owner to associate to this Consumer.
+     * Fetches the owner of this consumer if it has been populated.
+     * <p></p>
+     * <strong>Note</strong>: This method is not tied to the persistence engine, and is provided for
+     * compatibility with the ConsumerInfo interface. This method operates entirely on a transient
+     * reference to the owner, and the value returned by this method is not guaranteed to be a
+     * proper representation of the state of this consumer's owner at the time it is called. To
+     * get the actual backing state of this consumer, use the getOwnerId method instead.
+     *
+     * @return
+     *  The owner of this consumer, if populate; null otherwise.
      */
-    public void setOwner(Owner owner) {
-        if (owner != null) {
-            this.ownerId = owner.getId();
-        }
+    @Override
+    @JsonIgnore
+    public Owner getOwner() {
+        return this.owner;
+    }
+
+    /**
+     * Sets or clears the owner of this consumer.
+     * <p></p>
+     * <strong>Note</strong>: This method is not tied to the persistence engine, and is provided for
+     * compatibility with the ConsumerInfo interface. Changes made to this consumer using this
+     * method will not be reflected in the database state of either the consumer this instance
+     * represents, nor the provided owner. To change the actual backing state of this consumer, use
+     * the setOwnerId method instead.
+     *
+     * @param owner
+     *  The owner to set for this consumer
+     *
+     * @return
+     *  A reference to this consumer
+     */
+    @JsonIgnore
+    public Consumer setOwnerRef(Owner owner) {
+        this.owner = owner;
+        return this;
     }
 
     @Override

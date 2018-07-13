@@ -36,7 +36,7 @@ public interface SubscriptionServiceAdapter {
      * Return all subscriptions.
      * @return all subscriptions.
      */
-    Collection<SubscriptionInfo> getSubscriptions();
+    Collection<? extends SubscriptionInfo> getSubscriptions();
 
     /**
      * Lookup a specific subscription.
@@ -50,7 +50,7 @@ public interface SubscriptionServiceAdapter {
      * @param owner Owner of the subscriptions.
      * @return all subscriptions for the given owner.
      */
-    Collection<SubscriptionInfo> getSubscriptions(String ownerKey);
+    Collection<? extends SubscriptionInfo> getSubscriptions(String ownerKey);
 
     /**
      * List all active subscription ids for the given owner.
@@ -65,7 +65,7 @@ public interface SubscriptionServiceAdapter {
      * @param product the main or provided product to look for.
      * @return a list of subscriptions that provide this product.
      */
-    Collection<SubscriptionInfo> getSubscriptionsByProductId(String productId);
+    Collection<? extends SubscriptionInfo> getSubscriptionsByProductId(String productId);
 
     /**
      * Checks to see if the customer has subscription terms that need to be accepted

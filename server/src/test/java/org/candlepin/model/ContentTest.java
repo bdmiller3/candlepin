@@ -53,14 +53,14 @@ public class ContentTest extends DatabaseTestFixture {
 
         content.setModifiedProductIds(modifiedProductIds);
         Long metadataExpire = new Long(60 * 60 * 24);
-        content.setMetadataExpire(metadataExpire);
+        content.setMetadataExpiration(metadataExpire);
 
         contentCurator.create(content);
 
         Content lookedUp = contentCurator.get(content.getUuid());
         assertEquals(content.getContentUrl(), lookedUp.getContentUrl());
         assertThat(lookedUp.getModifiedProductIds(), hasItem("ProductB"));
-        assertEquals(metadataExpire, lookedUp.getMetadataExpire());
+        assertEquals(metadataExpire, lookedUp.getMetadataExpiration());
     }
 
     @Test

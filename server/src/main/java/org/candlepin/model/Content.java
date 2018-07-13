@@ -206,7 +206,7 @@ public class Content extends AbstractHibernateObject implements SharedEntity, Cl
         this.setRequiredTags(source.getRequiredTags());
         this.setReleaseVersion(source.getReleaseVersion());
         this.setGpgUrl(source.getGpgUrl());
-        this.setMetadataExpire(source.getMetadataExpire());
+        this.setMetadataExpiration(source.getMetadataExpiration());
         this.setArches(source.getArches());
         this.setModifiedProductIds(source.getModifiedProductIds());
 
@@ -381,11 +381,11 @@ public class Content extends AbstractHibernateObject implements SharedEntity, Cl
     }
 
     @Override
-    public Long getMetadataExpire() {
+    public Long getMetadataExpiration() {
         return metadataExpire;
     }
 
-    public void setMetadataExpire(Long metadataExpire) {
+    public void setMetadataExpiration(Long metadataExpire) {
         this.metadataExpire = metadataExpire;
     }
 

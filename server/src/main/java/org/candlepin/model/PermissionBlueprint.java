@@ -109,7 +109,7 @@ public class PermissionBlueprint extends AbstractHibernateObject implements Perm
      */
     @Override
     @XmlTransient
-    public String getAccessName() {
+    public String getAccessLevel() {
         Access access = this.getAccess();
         return access != null ? access.name() : null;
     }

@@ -14,8 +14,13 @@
  */
 package org.candlepin.hostedtest;
 
+import org.candlepin.model.Pool;
+import org.candlepin.model.Product;
+import org.candlepin.model.Content;
+import org.candlepin.model.Owner;
 import org.candlepin.service.SubscriptionServiceAdapter;
 import org.candlepin.service.model.ConsumerInfo;
+import org.candlepin.service.model.ContentInfo;
 import org.candlepin.service.model.ProductInfo;
 import org.candlepin.service.model.SubscriptionInfo;
 
@@ -40,19 +45,19 @@ import java.util.Map;
 public class HostedTestSubscriptionServiceAdapter implements SubscriptionServiceAdapter {
     private static Logger log = LoggerFactory.getLogger(HostedTestSubscriptionServiceAdapter.class);
 
-    private static Map<String, SubscriptionInfo> idMap = new HashMap<>();
-    private static Map<String, List<SubscriptionInfo>> ownerMap = new HashMap<>();
-    private static Map<String, List<SubscriptionInfo>> productMap = new HashMap<>();
+    private static Map<String, Pool> idMap = new HashMap<>();
+    private static Map<String, List<Pool>> ownerMap = new HashMap<>();
+    private static Map<String, List<Pool>> productMap = new HashMap<>();
 
     @Override
-    public Collection<SubscriptionInfo> getSubscriptions(String ownerKey) {
+    public Collection<? extends SubscriptionInfo> getSubscriptions(String ownerKey) {
         return this.ownerMap.containsKey(ownerKey) ? this.ownerMap.get(ownerKey) : new ArrayList<>();
     }
 
     @Override
     public Collection<String> getSubscriptionIds(String ownerKey) {
         List<String> ids = new ArrayList<>();
-        List<SubscriptionInfo> subscriptions = ownerMap.get(ownerKey);
+        List<? extends SubscriptionInfo> subscriptions = ownerMap.get(ownerKey);
 
         if (subscriptions != null) {
             for (SubscriptionInfo subscription : subscriptions) {
@@ -64,7 +69,7 @@ public class HostedTestSubscriptionServiceAdapter implements SubscriptionService
     }
 
     @Override
-    public Collection<SubscriptionInfo> getSubscriptionsByProductId(String productId) {
+    public Collection<? extends SubscriptionInfo> getSubscriptionsByProductId(String productId) {
         return this.productMap.containsKey(productId) ? this.productMap.get(productId) : new ArrayList<>();
     }
 
@@ -74,11 +79,13 @@ public class HostedTestSubscriptionServiceAdapter implements SubscriptionService
     }
 
     @Override
-    public Collection<SubscriptionInfo> getSubscriptions() {
+    public Collection<? extends SubscriptionInfo> getSubscriptions() {
         List<SubscriptionInfo> result = new ArrayList<>();
+
         for (String id : idMap.keySet()) {
             result.add(idMap.get(id));
         }
+
         return result;
     }
 
@@ -107,47 +114,83 @@ public class HostedTestSubscriptionServiceAdapter implements SubscriptionService
         if (!ownerMap.containsKey(s.getOwner().getKey())) {
             ownerMap.put(s.getOwner().getKey(), new ArrayList<>());
         }
+
         ownerMap.get(s.getOwner().getKey()).add(s);
         if (!productMap.containsKey(s.getProduct().getId())) {
             productMap.put(s.getProduct().getId(), new ArrayList<>());
         }
 
-        this.clearUuids(s.getProduct());
-        this.clearUuids(s.getDerivedProduct());
+        // this.clearUuids(s.getProduct());
+        // this.clearUuids(s.getDerivedProduct());
 
-        if (CollectionUtils.isNotEmpty(s.getProvidedProducts())) {
-            for (ProductInfo pdata : s.getProvidedProducts()) {
-                this.clearUuids(pdata);
-            }
-        }
+        // if (CollectionUtils.isNotEmpty(s.getProvidedProducts())) {
+        //     for (ProductInfo pdata : s.getProvidedProducts()) {
+        //         this.clearUuids(pdata);
+        //     }
+        // }
 
-        if (CollectionUtils.isNotEmpty(s.getDerivedProvidedProducts())) {
-            for (ProductInfo pdata : s.getDerivedProvidedProducts()) {
-                this.clearUuids(pdata);
-            }
-        }
+        // if (CollectionUtils.isNotEmpty(s.getDerivedProvidedProducts())) {
+        //     for (ProductInfo pdata : s.getDerivedProvidedProducts()) {
+        //         this.clearUuids(pdata);
+        //     }
+        // }
 
         productMap.get(s.getProduct().getId()).add(s);
         return s;
     }
 
-    private void clearUuids(ProductInfo pdata) {
-        if (pdata != null) {
-            pdata.setUuid(null);
-            if (pdata.getProductContent() != null) {
-                for (ProductContentData pcdata : pdata.getProductContent()) {
-                    if (pcdata.getContent() != null) {
-                        pcdata.getContent().setUuid(null);
-                    }
-                }
-            }
-        }
-    }
+    // private void clearUuids(ProductInfo pinfo) {
+    //     if (pinfo instanceof ProductDTO) {
+    //         ProductDTO pdata = (ProductDTO) pinfo;
+
+    //         pdata.setUuid(null);
+    //         if (pdata.getProductContent() != null) {
+    //             for (ProductContentDTO pcdata : pdata.getProductContent()) {
+    //                 if (pcdata.getContent() != null) {
+    //                     pcdata.getContent().setUuid(null);
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 
     public SubscriptionInfo updateSubscription(SubscriptionInfo ss) {
         deleteSubscription(ss.getId());
         SubscriptionInfo s = createSubscription(ss);
         return s;
+    }
+
+    /**
+     * Workaround method for adding content to all currently known instances of a given product
+     * used by any currently known subscriptions. Any products added after a call to this method
+     * will not necessarily reflect any changes made by this operation.
+     *
+     * @param productId
+     *  The ID of the product to modify
+     *
+     * @param content
+     *  The content to add to the specified product
+     *
+     * @param enabled
+     *  Whether or not the content should be enabled on the product
+     */
+    public void addContentToProduct(String productId, ContentInfo content, boolean enabled) {
+        if (productId == null) {
+            throw new IllegalArgumentException("productId is null");
+        }
+
+        if (content == null) {
+            throw new IllegalArgumentException("content is null");
+        }
+
+
+
+
+
+
+
+
+
     }
 
     public void deleteSubscription(SubscriptionInfo s) {

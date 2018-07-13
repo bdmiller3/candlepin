@@ -764,7 +764,7 @@ public class ContentManager {
         }
 
         if (dto.getMetadataExpiration() != null &&
-            !dto.getMetadataExpiration().equals(entity.getMetadataExpire())) {
+            !dto.getMetadataExpiration().equals(entity.getMetadataExpiration())) {
 
             return true;
         }
@@ -837,7 +837,7 @@ public class ContentManager {
             return true;
         }
 
-        if (dto.getMetadataExpire() != null && !dto.getMetadataExpire().equals(entity.getMetadataExpire())) {
+        if (dto.getMetadataExpiration() != null && !dto.getMetadataExpiration().equals(entity.getMetadataExpiration())) {
             return true;
         }
 
@@ -916,7 +916,7 @@ public class ContentManager {
         }
 
         if (update.getMetadataExpiration() != null) {
-            entity.setMetadataExpire(update.getMetadataExpiration());
+            entity.setMetadataExpiration(update.getMetadataExpiration());
         }
 
         if (update.getModifiedProductIds() != null) {
@@ -990,8 +990,8 @@ public class ContentManager {
             entity.setGpgUrl(update.getGpgUrl());
         }
 
-        if (update.getMetadataExpire() != null) {
-            entity.setMetadataExpire(update.getMetadataExpire());
+        if (update.getMetadataExpiration() != null) {
+            entity.setMetadataExpiration(update.getMetadataExpiration());
         }
 
         if (update.getModifiedProductIds() != null) {

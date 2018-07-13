@@ -286,9 +286,9 @@ public class Owner extends AbstractHibernateObject<Owner>
      *
      * @param c consumer for this owner.
      */
-    public void addConsumer(Consumer c) {
-        c.setOwner(this);
-        this.consumers.add(c);
+    public void addConsumer(Consumer consumer) {
+        consumer.setOwnerId(this.getId());
+        this.consumers.add(consumer);
 
     }
 
